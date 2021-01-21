@@ -19,12 +19,12 @@ jobs:
           ruby-version: ${{ matrix.ruby }}
       - name: Install SWIG
         run: |
-          wget -O swig-3.0.7.tar.gz https://github.com/swig/swig/archive/v3.0.7.tar.gz
-          tar -xvf ./swig-3.0.7.tar.gz
-          cd ./swig-3.0.7
+          git clone --depth 1 --branch v3.0.7 git@github.com:swig/swig.git
+          cd swig
           ./autogen
           ./configure
-          make && make install
+          make
+          sudo make install
       - name: Bundle install
         run: |
           gem install bundler
