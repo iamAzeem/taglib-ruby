@@ -17,10 +17,21 @@ jobs:
       - uses: actions/setup-ruby@v1
         with:
           ruby-version: ${{ matrix.ruby }}
+      - name: Install SWIG
+        run: |
+          wget https://github.com/swig/swig/archive/v3.0.7.tar.gz
+          tar -xvf swig-3.0.7
+          cd swig-3.0.7
+          ./autogen
+          ./configure
+          make && make install
       - name: Bundle install
         run: |
           gem install bundler
           bundle install
+      - name: Generating SWIG wrappers
+        run: |
+          rake swig
       - name: Install taglib
         run: bundle exec rake vendor
       - name: Compile
