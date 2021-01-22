@@ -30,12 +30,10 @@ jobs:
         run: |
           gem install bundler
           bundle install
-      - name: Generating all SWIG wrappers
-        run: |
-          touch ext/*/*.i
-          bundle exec rake swig
       - name: Install taglib
         run: bundle exec rake vendor
+      - name: Generate SWIG wrappers
+        run: TAGLIB_DIR=$PWD/tmp/x86_64-linux/taglib-$TAGLIB_VERSION LD_LIBRARY_PATH=$PWD/tmp/x86_64-linux/taglib-$TAGLIB_VERSION/lib bundle exec rake swig
       - name: Compile
         run: TAGLIB_DIR=$PWD/tmp/x86_64-linux/taglib-$TAGLIB_VERSION LD_LIBRARY_PATH=$PWD/tmp/x86_64-linux/taglib-$TAGLIB_VERSION/lib bundle exec rake compile
       - name: Test
