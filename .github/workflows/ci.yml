@@ -17,6 +17,12 @@ jobs:
       - uses: actions/setup-ruby@v1
         with:
           ruby-version: ${{ matrix.ruby }}
+      - name: Bundle install
+        run: |
+          gem install bundler
+          bundle install
+      - name: Install taglib
+        run: bundle exec rake vendor
       - name: Install SWIG v3.0.7
         run: |
           sudo apt install yodl
@@ -26,14 +32,10 @@ jobs:
           ./configure
           make
           sudo make install
-      - name: Bundle install
-        run: |
-          gem install bundler
-          bundle install
-      - name: Install taglib
-        run: bundle exec rake vendor
       - name: Generate SWIG wrappers
-        run: TAGLIB_DIR=$PWD/tmp/x86_64-linux/taglib-$TAGLIB_VERSION LD_LIBRARY_PATH=$PWD/tmp/x86_64-linux/taglib-$TAGLIB_VERSION/lib bundle exec rake swig
+        run: |
+          touch ext/*/*.i
+          TAGLIB_DIR=$PWD/tmp/x86_64-linux/taglib-$TAGLIB_VERSION LD_LIBRARY_PATH=$PWD/tmp/x86_64-linux/taglib-$TAGLIB_VERSION/lib bundle exec rake swig
       - name: Compile
         run: TAGLIB_DIR=$PWD/tmp/x86_64-linux/taglib-$TAGLIB_VERSION LD_LIBRARY_PATH=$PWD/tmp/x86_64-linux/taglib-$TAGLIB_VERSION/lib bundle exec rake compile
       - name: Test
