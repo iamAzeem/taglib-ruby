@@ -19,16 +19,12 @@ jobs:
           ruby-version: ${{ matrix.ruby }}
       - name: Install SWIG v3.0.7
         run: |
-          echo "Cloning SWIG v3.0.7..."
           git clone --depth 1 --branch v3.0.7 https://github.com/swig/swig.git
-          echo "Configuring..."
           cd swig
           ./autogen.sh
           ./configure
-          echo "Building..."
           make
-          echo "Installing..."
-          make install
+          sudo make install
       - name: Bundle install
         run: |
           gem install bundler
