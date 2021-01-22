@@ -11,7 +11,7 @@ jobs:
     env:
       PLATFORM: x86_64-linux
       TAGLIB_VERSION: 1.11.1
-      # SKIP_SWIG: true
+      SKIP_SWIG: true
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-ruby@v1
@@ -33,9 +33,7 @@ jobs:
           make
           sudo make install
       - name: Generate SWIG wrappers
-        run: |
-          touch ext/*/*.i
-          TAGLIB_DIR=$PWD/tmp/x86_64-linux/taglib-$TAGLIB_VERSION LD_LIBRARY_PATH=$PWD/tmp/x86_64-linux/taglib-$TAGLIB_VERSION/lib bundle exec rake swig
+        run: TAGLIB_DIR=$PWD/tmp/x86_64-linux/taglib-$TAGLIB_VERSION LD_LIBRARY_PATH=$PWD/tmp/x86_64-linux/taglib-$TAGLIB_VERSION/lib bundle exec rake swig
       - name: Compile
         run: TAGLIB_DIR=$PWD/tmp/x86_64-linux/taglib-$TAGLIB_VERSION LD_LIBRARY_PATH=$PWD/tmp/x86_64-linux/taglib-$TAGLIB_VERSION/lib bundle exec rake compile
       - name: Test
