@@ -17,14 +17,18 @@ jobs:
       - uses: actions/setup-ruby@v1
         with:
           ruby-version: ${{ matrix.ruby }}
-      - name: Install SWIG
+      - name: Install SWIG v3.0.7
         run: |
-          git clone --depth 1 --branch v3.0.7 git@github.com:swig/swig.git
+          echo "Cloning SWIG v3.0.7..."
+          git clone --depth 1 --branch v3.0.7 https://github.com/swig/swig.git
+          echo "Configuring..."
           cd swig
           ./autogen
           ./configure
+          echo "Building..."
           make
-          sudo make install
+          echo "Installing..."
+          make install
       - name: Bundle install
         run: |
           gem install bundler
