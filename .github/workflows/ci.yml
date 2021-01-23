@@ -33,7 +33,9 @@ jobs:
         if: steps.cache-swig-v307.outputs.cache-hit != 'true'
         run: |
           echo "check existing swig"
-          which swig && swig -swiglib
+          which swig
+          swig -swiglib
+          swig -version
           sudo apt install yodl
           git clone --depth 1 --branch v3.0.7 https://github.com/swig/swig.git
           cd swig
