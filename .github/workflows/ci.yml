@@ -27,7 +27,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: .swig-3.0.7
-          key: ${{ matrix.os }}-swig307
+          key: ${{ matrix.ruby }}-swig307
       - name: Install SWIG v3.0.7
         if: steps.cache-swig307.outputs.cache-hit != 'true'
         run: |
