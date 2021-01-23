@@ -27,7 +27,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: swig
-          key: swig
+          key: ${{ runner.os }}-swig
       - name: Install SWIG v3.0.7
         if: steps.cache-swig.outputs.cache-hit != 'true'
         run: |
