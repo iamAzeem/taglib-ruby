@@ -11,6 +11,7 @@ jobs:
     env:
       PLATFORM: x86_64-linux
       TAGLIB_VERSION: 1.11.1
+      SWIG_DIR: .swig-v3.0.7
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-ruby@v1
@@ -23,19 +24,19 @@ jobs:
       - name: Install taglib
         run: bundle exec rake vendor
       - name: Cache SWIG v3.0.7
-        id: cache-swig
+        id: cache-swig-v307
         uses: actions/cache@v2
         with:
-          path: swig
-          key: ${{ runner.os }}-swig
+          path: $SWIG_DIR
+          key: ${{ runner.os }}-swig-v307
       - name: Install SWIG v3.0.7
-        if: steps.cache-swig.outputs.cache-hit != 'true'
+        if: steps.cache-swig-v307.outputs.cache-hit != 'true'
         run: |
           sudo apt install yodl
           git clone --depth 1 --branch v3.0.7 https://github.com/swig/swig.git
           cd swig
           ./autogen.sh
-          ./configure
+          ./configure --prefix=$PWD/$SWIG_DIR
           make
           sudo make install
       - name: Generate SWIG wrappers
@@ -45,4 +46,6 @@ jobs:
       - name: Compile
         run: TAGLIB_DIR=$PWD/tmp/x86_64-linux/taglib-$TAGLIB_VERSION LD_LIBRARY_PATH=$PWD/tmp/x86_64-linux/taglib-$TAGLIB_VERSION/lib bundle exec rake compile
       - name: Test
-        run: bundle exec rake test
+        run: |
+          export PATH=$PWD/$SWIG_DIR/bin:$PATH
+          bundle exec rake test
