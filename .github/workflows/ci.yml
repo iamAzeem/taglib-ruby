@@ -33,8 +33,8 @@ jobs:
         id: cache-swig-v307
         uses: actions/cache@v2
         with:
-          path: ./$SWIG_DIR
-          key: ${{ runner.os }}-swig-v307-cache-1
+          path: $PWD/swig/$SWIG_DIR
+          key: ${{ runner.os }}-swig-v307-cache-2
 
       - name: Install SWIG v3.0.7
         if: steps.cache-swig-v307.outputs.cache-hit != 'true'
@@ -45,9 +45,11 @@ jobs:
           ./autogen.sh
           ./configure --prefix=$PWD/$SWIG_DIR --with-ruby=$(which ruby) --without-alllang
           make && make install
+          pwd
 
       - name: Generate SWIG wrappers
         run: |
+          pwd
           touch ext/*/*.i
           export PATH=$PWD/swig/$SWIG_DIR/bin/:$PATH && echo "PATH: " $PATH
           export SWIG_LIB=$PWD/swig/$SWIG_DIR/share/swig/3.0.7/ && echo "SWIG_LIB: " $SWIG_LIB
