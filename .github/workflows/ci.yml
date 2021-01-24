@@ -59,10 +59,8 @@ jobs:
         run: |
           touch ext/*/*.i
           export PATH=$PWD/swig/$SWIG_DIR/bin/:$PATH
-          echo $PATH
           export SWIG_LIB=$PWD/swig/$SWIG_DIR/$SWIG_LIB_DIR
-          echo $SWIG_LIB
-          TAGLIB_DIR=$PWD/tmp/x86_64-linux/taglib-$TAGLIB_VERSION LD_LIBRARY_PATH=$PWD/tmp/x86_64-linux/taglib-$TAGLIB_VERSION/lib bundle exec rake swig
+          bundle exec rake swig
       
       - name: Compile
         run: TAGLIB_DIR=$PWD/tmp/x86_64-linux/taglib-$TAGLIB_VERSION LD_LIBRARY_PATH=$PWD/tmp/x86_64-linux/taglib-$TAGLIB_VERSION/lib bundle exec rake compile
