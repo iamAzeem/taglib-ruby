@@ -34,9 +34,9 @@ jobs:
       # Check and remove the default version of SWIG i.e.
       # - Ubuntu 18.04 (SWIG v3.0.12) (https://github.com/actions/virtual-environments/blob/main/images/linux/Ubuntu1804-README.md)
       # - Ubuntu 20.04 (SWIG v4.0.1 ) (https://github.com/actions/virtual-environments/blob/main/images/linux/Ubuntu2004-README.md)
-      - name: Remove default SWIG version > v3.0.7
-        run: |
-          swig -version | grep -q "3.0.7" && echo "SWIG v3.0.7 found!" || sudo apt remove -y swig && echo "SWIG > v3.0.7 removed!"
+#       - name: Remove default SWIG version > v3.0.7
+#         run: |
+#           swig -version | grep -q "3.0.7" && echo "SWIG v3.0.7 found!" || sudo apt remove -y swig && echo "SWIG > v3.0.7 removed!"
       
 #       - name: Cache SWIG v3.0.7
 #         id: cache-swig-v307
