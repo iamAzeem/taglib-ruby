@@ -33,8 +33,8 @@ jobs:
         id: cache-swig-v307
         uses: actions/cache@v2
         with:
-          path: $SWIG_DIR
-          key: ${{ runner.os }}-swig-v307
+          path: $PWD/swig/$SWIG_DIR/
+          key: ${{ runner.os }}-swig-v307-cache
 
       - name: Install SWIG v3.0.7
         if: steps.cache-swig-v307.outputs.cache-hit != 'true'
@@ -50,7 +50,9 @@ jobs:
         run: |
           touch ext/*/*.i
           export PATH=$PWD/swig/$SWIG_DIR/bin/:$PATH
+          echo $PATH
           export SWIG_LIB=$PWD/swig/$SWIG_DIR/share/swig/3.0.7/
+          echo $SWIG_LIB
           TAGLIB_DIR=$PWD/tmp/x86_64-linux/taglib-$TAGLIB_VERSION LD_LIBRARY_PATH=$PWD/tmp/x86_64-linux/taglib-$TAGLIB_VERSION/lib bundle exec rake swig
 
       - name: Compile
