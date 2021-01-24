@@ -15,8 +15,7 @@ jobs:
       TAGLIB_VERSION: 1.11.1
       SWIG_DIR: .swig-v3.0.7
       SWIG_LIB: $PWD/$SWIG_DIR/share/swig/3.0.7/
-      PATH: $PWD/$SWIG_DIR/bin:$PATH
-    
+          
     steps:
       - uses: actions/checkout@v2
       
@@ -55,7 +54,7 @@ jobs:
           ./configure --prefix=$PWD/$SWIG_DIR --with-ruby=$(which ruby) --without-alllang
           make
           make install
-          # export PATH=$PWD/$SWIG_DIR/bin:$PATH
+          export PATH=$PWD/$SWIG_DIR/bin:$PATH
 
       - name: Generate SWIG wrappers
         run: |
