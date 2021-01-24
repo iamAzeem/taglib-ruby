@@ -58,9 +58,9 @@ jobs:
       - name: Generate SWIG wrappers
         run: |
           touch ext/*/*.i
-          export PATH=$PWD/$SWIG_DIR/bin:$PATH
+          export PATH=$PWD/swig/$SWIG_DIR/bin/:$PATH
           echo $PATH
-          export SWIG_LIB=$PWD/$SWIG_LIB_DIR
+          export SWIG_LIB=$PWD/swig/$SWIG_LIB_DIR
           echo $SWIG_LIB
           TAGLIB_DIR=$PWD/tmp/x86_64-linux/taglib-$TAGLIB_VERSION LD_LIBRARY_PATH=$PWD/tmp/x86_64-linux/taglib-$TAGLIB_VERSION/lib bundle exec rake swig
       
