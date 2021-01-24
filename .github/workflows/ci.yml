@@ -5,51 +5,67 @@ on: [push, pull_request]
 jobs:
   build:
     runs-on: ubuntu-latest
+    
     strategy:
       matrix:
         ruby: [2.4, 2.7]
+    
     env:
       PLATFORM: x86_64-linux
       TAGLIB_VERSION: 1.11.1
       SWIG_DIR: .swig-v3.0.7
+      SWIG_LIB: $PWD/$SWIG_DIR/share/swig/3.0.7/
+      PATH: $PWD/$SWIG_DIR/bin:$PATH
+    
     steps:
       - uses: actions/checkout@v2
+      
       - uses: actions/setup-ruby@v1
         with:
           ruby-version: ${{ matrix.ruby }}
+      
       - name: Bundle install
         run: |
           gem install bundler
           bundle install
+
       - name: Install taglib
         run: bundle exec rake vendor
-      - name: Cache SWIG v3.0.7
-        id: cache-swig-v307
-        uses: actions/cache@v2
-        with:
-          path: $SWIG_DIR
-          key: ${{ runner.os }}-swig-v307
-      - name: Install SWIG v3.0.7
-        if: steps.cache-swig-v307.outputs.cache-hit != 'true'
+
+      - name: Remove default SWIG version > 3.0.7
         run: |
-          echo "check existing swig"
-          which swig
-          swig -swiglib
-          swig -version
+          swig -version | grep -q "3.0.7" && echo "SWIG v3.0.7 found!" || sudo apt remove -y swig* && echo "SWIG > v3.0.7 removed!"
+      
+#       - name: Cache SWIG v3.0.7
+#         id: cache-swig-v307
+#         uses: actions/cache@v2
+#         with:
+#           path: $SWIG_DIR
+#           key: ${{ runner.os }}-swig-v307
+      
+      - name: Install SWIG v3.0.7
+#         if: steps.cache-swig-v307.outputs.cache-hit != 'true'
+        run: |
+          echo "check existing swig" && which swig && swig -swiglib && swig -version
+          
           sudo apt install yodl
           git clone --depth 1 --branch v3.0.7 https://github.com/swig/swig.git
           cd swig
           ./autogen.sh
-          ./configure --prefix=$PWD/$SWIG_DIR
+          ./configure --prefix=$PWD/$SWIG_DIR --with-ruby=$(which ruby) --without-alllang
           make
           make install
+          # export PATH=$PWD/$SWIG_DIR/bin:$PATH
+
       - name: Generate SWIG wrappers
         run: |
           touch touch ext/*/*.i
           TAGLIB_DIR=$PWD/tmp/x86_64-linux/taglib-$TAGLIB_VERSION LD_LIBRARY_PATH=$PWD/tmp/x86_64-linux/taglib-$TAGLIB_VERSION/lib bundle exec rake swig
+      
       - name: Compile
         run: TAGLIB_DIR=$PWD/tmp/x86_64-linux/taglib-$TAGLIB_VERSION LD_LIBRARY_PATH=$PWD/tmp/x86_64-linux/taglib-$TAGLIB_VERSION/lib bundle exec rake compile
+      
       - name: Test
         run: |
-          export PATH=$PWD/$SWIG_DIR/bin:$PATH
+          # export PATH=$PWD/$SWIG_DIR/bin:$PATH
           bundle exec rake test
