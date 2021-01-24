@@ -14,7 +14,7 @@ jobs:
       PLATFORM: x86_64-linux
       TAGLIB_VERSION: 1.11.1
       SWIG_DIR: .swig-v3.0.7
-      SWIG_LIB_DIR: $SWIG_DIR/share/swig/3.0.7/
+      SWIG_LIB_DIR: share/swig/3.0.7/
           
     steps:
       - uses: actions/checkout@v2
@@ -60,7 +60,7 @@ jobs:
           touch ext/*/*.i
           export PATH=$PWD/swig/$SWIG_DIR/bin/:$PATH
           echo $PATH
-          export SWIG_LIB=$PWD/swig/$SWIG_LIB_DIR
+          export SWIG_LIB=$PWD/swig/$SWIG_DIR/$SWIG_LIB_DIR
           echo $SWIG_LIB
           TAGLIB_DIR=$PWD/tmp/x86_64-linux/taglib-$TAGLIB_VERSION LD_LIBRARY_PATH=$PWD/tmp/x86_64-linux/taglib-$TAGLIB_VERSION/lib bundle exec rake swig
       
