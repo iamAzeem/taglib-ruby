@@ -33,7 +33,7 @@ jobs:
 
       - name: Remove default SWIG version > v3.0.7
         run: |
-          swig -version | grep -q "3.0.7" && echo "SWIG v3.0.7 found!" || sudo apt remove -y swig* && echo "SWIG > v3.0.7 removed!"
+          swig -version | grep -q "3.0.7" && echo "SWIG v3.0.7 found!" || sudo apt remove -y swig && echo "SWIG > v3.0.7 removed!"
       
 #       - name: Cache SWIG v3.0.7
 #         id: cache-swig-v307
@@ -57,9 +57,11 @@ jobs:
 
       - name: Generate SWIG wrappers
         run: |
-          touch touch ext/*/*.i
+          touch ext/*/*.i
           export PATH=$PWD/$SWIG_DIR/bin:$PATH
+          echo $PATH
           export SWIG_LIB=$PWD/$SWIG_LIB_DIR
+          echo $SWIG_LIB
           TAGLIB_DIR=$PWD/tmp/x86_64-linux/taglib-$TAGLIB_VERSION LD_LIBRARY_PATH=$PWD/tmp/x86_64-linux/taglib-$TAGLIB_VERSION/lib bundle exec rake swig
       
       - name: Compile
