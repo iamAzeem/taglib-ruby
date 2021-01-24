@@ -31,7 +31,7 @@ jobs:
       - name: Install taglib
         run: bundle exec rake vendor
 
-      - name: Remove default SWIG version > 3.0.7
+      - name: Remove default SWIG version > v3.0.7
         run: |
           swig -version | grep -q "3.0.7" && echo "SWIG v3.0.7 found!" || sudo apt remove -y swig* && echo "SWIG > v3.0.7 removed!"
       
@@ -55,9 +55,11 @@ jobs:
           make
           make install
           export PATH=$PWD/$SWIG_DIR/bin:$PATH
+          echo $PATH
 
       - name: Generate SWIG wrappers
         run: |
+          echo $PATH
           touch touch ext/*/*.i
           TAGLIB_DIR=$PWD/tmp/x86_64-linux/taglib-$TAGLIB_VERSION LD_LIBRARY_PATH=$PWD/tmp/x86_64-linux/taglib-$TAGLIB_VERSION/lib bundle exec rake swig
       
