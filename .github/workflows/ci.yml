@@ -53,6 +53,7 @@ jobs:
           echo $PATH
           export SWIG_LIB=$PWD/swig/$SWIG_DIR/share/swig/3.0.7/
           echo $SWIG_LIB
+          swig -version && swig -swiglib
           TAGLIB_DIR=$PWD/tmp/x86_64-linux/taglib-$TAGLIB_VERSION LD_LIBRARY_PATH=$PWD/tmp/x86_64-linux/taglib-$TAGLIB_VERSION/lib bundle exec rake swig
 
       - name: Compile
