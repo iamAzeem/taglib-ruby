@@ -14,7 +14,9 @@ jobs:
       PLATFORM: x86_64-linux
       TAGLIB_VERSION: 1.11.1
       SWIG_DIR: .swig-v3.0.7
-          
+      SWIG_BIN_DIR: $SWIG_DIR/bin
+      SWIG_LIB_DIR: $SWIG_DIR/share/swig/3.0.7
+
     steps:
       - uses: actions/checkout@v2      
       - uses: actions/setup-ruby@v1
@@ -33,7 +35,9 @@ jobs:
         id: cache-swig-v307
         uses: actions/cache@v2
         with:
-          path: $PWD/swig/$SWIG_DIR/
+          path: |
+            $PWD/swig/$SWIG_BIN_DIR
+            $PWD/swig/$SWIG_LIB_DIR
           key: ${{ runner.os }}-swig-v307-cache
 
       - name: Install SWIG v3.0.7
@@ -49,9 +53,9 @@ jobs:
       - name: Generate SWIG wrappers
         run: |
           touch ext/*/*.i
-          export PATH=$PWD/swig/$SWIG_DIR/bin/:$PATH
+          export PATH=$PWD/swig/$SWIG_BIN_DIR/:$PATH
           echo $PATH
-          export SWIG_LIB=$PWD/swig/$SWIG_DIR/share/swig/3.0.7/
+          export SWIG_LIB=$PWD/swig/$SWIG_LIB_DIR
           echo $SWIG_LIB
           swig -version && swig -swiglib
           TAGLIB_DIR=$PWD/tmp/x86_64-linux/taglib-$TAGLIB_VERSION LD_LIBRARY_PATH=$PWD/tmp/x86_64-linux/taglib-$TAGLIB_VERSION/lib bundle exec rake swig
