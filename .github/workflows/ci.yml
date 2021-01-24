@@ -50,7 +50,7 @@ jobs:
         run: |
           touch ext/*/*.i
           export PATH=$PWD/swig/$SWIG_DIR/bin/:$PATH
-          export SWIG_LIB=$PWD/swig/$SWIG_DIR/$SWIG_LIB_DIR
+          export SWIG_LIB=$PWD/swig/$SWIG_DIR/share/swig/3.0.7/
           TAGLIB_DIR=$PWD/tmp/x86_64-linux/taglib-$TAGLIB_VERSION LD_LIBRARY_PATH=$PWD/tmp/x86_64-linux/taglib-$TAGLIB_VERSION/lib bundle exec rake swig
 
       - name: Compile
