@@ -14,7 +14,7 @@ jobs:
       PLATFORM: x86_64-linux
       TAGLIB_VERSION: 1.11.1
       SWIG_DIR: .swig-v3.0.7
-      SWIG_LIB: $PWD/$SWIG_DIR/share/swig/3.0.7/
+      SWIG_LIB_DIR: $SWIG_DIR/share/swig/3.0.7/
           
     steps:
       - uses: actions/checkout@v2
@@ -54,13 +54,12 @@ jobs:
           ./configure --prefix=$PWD/$SWIG_DIR --with-ruby=$(which ruby) --without-alllang
           make
           make install
-          export PATH=$PWD/$SWIG_DIR/bin:$PATH
-          echo $PATH
 
       - name: Generate SWIG wrappers
         run: |
-          echo $PATH
           touch touch ext/*/*.i
+          export PATH=$PWD/$SWIG_DIR/bin:$PATH
+          export SWIG_LIB=$PWD/$SWIG_LIB_DIR
           TAGLIB_DIR=$PWD/tmp/x86_64-linux/taglib-$TAGLIB_VERSION LD_LIBRARY_PATH=$PWD/tmp/x86_64-linux/taglib-$TAGLIB_VERSION/lib bundle exec rake swig
       
       - name: Compile
@@ -68,5 +67,4 @@ jobs:
       
       - name: Test
         run: |
-          # export PATH=$PWD/$SWIG_DIR/bin:$PATH
           bundle exec rake test
