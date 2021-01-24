@@ -14,11 +14,9 @@ jobs:
       PLATFORM: x86_64-linux
       TAGLIB_VERSION: 1.11.1
       SWIG_DIR: .swig-v3.0.7
-      SWIG_LIB_DIR: share/swig/3.0.7/
           
     steps:
-      - uses: actions/checkout@v2
-      
+      - uses: actions/checkout@v2      
       - uses: actions/setup-ruby@v1
         with:
           ruby-version: ${{ matrix.ruby }}
@@ -31,36 +29,27 @@ jobs:
       - name: Install taglib
         run: bundle exec rake vendor
 
-      # Check and remove the default version of SWIG i.e.
-      # - Ubuntu 18.04 (SWIG v3.0.12) (https://github.com/actions/virtual-environments/blob/main/images/linux/Ubuntu1804-README.md)
-      # - Ubuntu 20.04 (SWIG v4.0.1 ) (https://github.com/actions/virtual-environments/blob/main/images/linux/Ubuntu2004-README.md)
-#       - name: Remove default SWIG version > v3.0.7
-#         run: |
-#           swig -version | grep -q "3.0.7" && echo "SWIG v3.0.7 found!" || sudo apt remove -y swig && echo "SWIG > v3.0.7 removed!"
-      
-#       - name: Cache SWIG v3.0.7
-#         id: cache-swig-v307
-#         uses: actions/cache@v2
-#         with:
-#           path: $SWIG_DIR
-#           key: ${{ runner.os }}-swig-v307
+      - name: Cache SWIG v3.0.7
+        id: cache-swig-v307
+        uses: actions/cache@v2
+        with:
+          path: $SWIG_DIR
+          key: ${{ runner.os }}-swig-v307
 
       - name: Install SWIG v3.0.7
-#         if: steps.cache-swig-v307.outputs.cache-hit != 'true'
+        if: steps.cache-swig-v307.outputs.cache-hit != 'true'
         run: |
           sudo apt install yodl
           git clone --depth 1 --branch v3.0.7 https://github.com/swig/swig.git
           cd swig
           ./autogen.sh
           ./configure --prefix=$PWD/$SWIG_DIR --with-ruby=$(which ruby) --without-alllang
-          make
-          make install
+          make && make install
 
       - name: Generate SWIG wrappers
         run: |
           touch ext/*/*.i
           export PATH=$PWD/swig/$SWIG_DIR/bin/:$PATH
-          export SWIG_LIB=$PWD/swig/$SWIG_DIR/$SWIG_LIB_DIR
           TAGLIB_DIR=$PWD/tmp/x86_64-linux/taglib-$TAGLIB_VERSION LD_LIBRARY_PATH=$PWD/tmp/x86_64-linux/taglib-$TAGLIB_VERSION/lib bundle exec rake swig
 
       - name: Compile
