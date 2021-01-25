@@ -17,9 +17,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - uses: actions/setup-ruby@v1
-        with:
-          ruby-version: ${{ matrix.ruby }}
 
       - name: Cache Bundle Install
         id: cache-bundle-install
@@ -30,12 +27,14 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gems-
 
+      - uses: actions/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby }}
+
       - name: Bundle Install
-        if: steps.cache-bundle-install.outputs.cache-hit != 'true'
         run: |
-          gem install bundler
           bundle config path vendor/bundle
-          bundle install
+          bundle install --jobs 4 --retry 3
 
       - name: Install taglib
         run: bundle exec rake vendor
@@ -69,5 +68,5 @@ jobs:
       - name: Compile
         run: TAGLIB_DIR=$PWD/tmp/x86_64-linux/taglib-$TAGLIB_VERSION LD_LIBRARY_PATH=$PWD/tmp/x86_64-linux/taglib-$TAGLIB_VERSION/lib bundle exec rake compile
 
-      - name: Test
+      - name: Run Tests
         run: bundle exec rake test
