@@ -33,8 +33,8 @@ jobs:
       - name: Bundle Install
         if: steps.cache-bundle-install.outputs.cache-hit != 'true'
         run: |
-          bundle config path vendor/bundle
           gem install bundler
+          bundle config path vendor/bundle
           bundle install
 
       - name: Install taglib
