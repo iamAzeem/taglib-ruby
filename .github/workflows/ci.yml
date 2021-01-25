@@ -21,23 +21,34 @@ jobs:
         with:
           ruby-version: ${{ matrix.ruby }}
 
-      - name: Bundle install
+      - name: Cache Bundle Install
+        id: cache-bundle-install
+        uses: actions/cache@v2
+        with:
+          path: vendor/bundle
+          key: ${{ runner.os }}-gems-${{ hashFiles('**/Gemfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-gems-
+
+      - name: Bundle Install
+        if: steps.cache-bundle-install.outputs.cache-hit != 'true'
         run: |
+          bundle config path vendor/bundle
           gem install bundler
           bundle install
 
       - name: Install taglib
         run: bundle exec rake vendor
 
-      - name: Cache SWIG v3.0.7
-        id: cache-swig-v307
-        uses: actions/cache@v2
-        with:
-          path: ~/$SWIG_DIR
-          key: ${{ runner.os }}-swig-v307-cache-5
+#       - name: Cache SWIG v3.0.7
+#         id: cache-swig-v307
+#         uses: actions/cache@v2
+#         with:
+#           path: ~/$SWIG_DIR
+#           key: ${{ runner.os }}-swig-v307-cache-5
 
       - name: Install SWIG v3.0.7
-        if: steps.cache-swig-v307.outputs.cache-hit != 'true'
+#         if: steps.cache-swig-v307.outputs.cache-hit != 'true'
         run: |
           sudo apt install yodl
           git clone --depth 1 --branch v3.0.7 https://github.com/swig/swig.git
@@ -46,14 +57,12 @@ jobs:
           ./configure --prefix=$HOME/$SWIG_DIR --with-ruby=$(which ruby) --without-alllang
           make && make install
           cd ..
-          pwd
 
       - name: Generate SWIG wrappers
         run: |
-          pwd
           touch ext/*/*.i
-          export PATH=$HOME/$SWIG_DIR/bin/:$PATH && echo "PATH: " $PATH
-          export SWIG_LIB=$HOME/$SWIG_DIR/share/swig/3.0.7/ && echo "SWIG_LIB: " $SWIG_LIB
+          export PATH=$HOME/$SWIG_DIR/bin:$PATH && echo "PATH: " $PATH
+          export SWIG_LIB=$HOME/$SWIG_DIR/share/swig/3.0.7 && echo "SWIG_LIB: " $SWIG_LIB
           swig -version && swig -swiglib
           TAGLIB_DIR=$PWD/tmp/x86_64-linux/taglib-$TAGLIB_VERSION LD_LIBRARY_PATH=$PWD/tmp/x86_64-linux/taglib-$TAGLIB_VERSION/lib bundle exec rake swig
 
